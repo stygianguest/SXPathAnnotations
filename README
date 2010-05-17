@@ -1,0 +1,6 @@
+Use-cases
+
+- Importing XML data into an SQL database
+- Authentication layer for a SOAP server
+- Monitoring and logging XML streams
+- Interpreting a GUI definition file
