@@ -1,6 +1,8 @@
-package xml2csv;
+package annotations;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -11,7 +13,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import regexpath.AST;
 import regexpath.Parser;
-
 import filters.AttributeFilter;
 import filters.BranchFilter;
 import filters.ChildFilter;
@@ -20,20 +21,49 @@ import filters.PredicateEndpoint;
 import filters.SaxFilter;
 import filters.SelectionEndpoint;
 
-public class XML2CSV extends DefaultHandler {
+public class SXPathDriver extends DefaultHandler {
+	
 	
 	SaxFilter filter;
 	SaxFilter[] endpoints;
 	
-	public XML2CSV() {
+
+	public SXPathDriver(Object obj) {
+		Class<? extends Object> cl = obj.getClass();
+		for (Method m : cl.getDeclaredMethods()) {
+			Trigger trigger = m.getAnnotation(Trigger.class);
+			if (trigger == null) continue;
+			
+			SaxFilter filter = parseSaxFilter(trigger.path(), true);
+			
+			Annotation[][] parAnnots = m.getParameterAnnotations();
+			for (Annotation[] annots : parAnnots) {
+				String selection = null;
+				for (Annotation annot : annots) {
+					if (annot instanceof Selection) {
+						selection = ((Selection) annot).path();
+						break;
+					}
+				}
+				if (selection == null)
+					throw new RuntimeException("No selection for xpath triggered method parameter");
+
+				filter = filter.merge(parseSaxFilter(selection, false));
+				
+			}
+		}
 	}
 	
+	private static SaxFilter parseSaxFilter(String path, boolean isPredicate) { 
+		Parser parser = new Parser();
+		return ASTtoSaxFilter(parser.parseNode(path), true);
+	}
 	
-	public static SaxFilter ASTtoSaxFilter(AST ast, boolean isPredicate) {
+	private static SaxFilter ASTtoSaxFilter(AST ast, boolean isPredicate) {
 		SaxFilter childfilter;
 		
 		if (ast.getChild() == null) {
-			if (isPredicate || ast.getChildren().length > 0)
+			if (isPredicate)
 				childfilter = new PredicateEndpoint();
 			else
 				childfilter = new SelectionEndpoint();
@@ -75,13 +105,6 @@ public class XML2CSV extends DefaultHandler {
 		}
 	}
 	
-	public XML2CSV(String xpath) {
-		Parser parser = new Parser();
-		
-		filter = ASTtoSaxFilter(parser.parseNode(xpath), false);
-		endpoints = filter.getEndpoints();
-	}
-	
 	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
@@ -121,64 +144,22 @@ public class XML2CSV extends DefaultHandler {
 		System.out.print("\n");
 	}
 	
-	public static void main(String[] args) {
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		try {
-//			 //exchange-document (@country, @doc-number, @kind) \
-//			      //citation/patcit/document-id (/country, /doc-number, /kind)
-//			XML2CSVCommandline driver = new XML2CSVCommandline();
+//	public static void main(String[] args) {
+//		SAXParserFactory factory = SAXParserFactory.newInstance();
+//		try {			
+//			if (args.length < 2) {
+//				System.out.println("Usage: xml2csv XPATH FILES");
+//			}
 //			
-//			SaxFilter country = new SelectionEndpoint();
-//			SaxFilter docNumber = new SelectionEndpoint();
-//			SaxFilter kind = new SelectionEndpoint();
-//			SaxFilter patcitCountry = new SelectionEndpoint();
-//			SaxFilter patcitDocNumber = new SelectionEndpoint();
-//			SaxFilter patcitKind = new SelectionEndpoint();
+//			XML2CSV driver = new XML2CSV(args[0]);
+//			SAXParser saxParser = factory.newSAXParser();
 //			
-//			SaxFilter filter = new DescendantFilter(
-//					"exch:exchange-document",
-//					new BranchFilter(new SaxFilter[] {
-//						new AttributeFilter("country", country),
-//						new AttributeFilter("doc-number", docNumber),
-//						new AttributeFilter("kind", kind) },
-//						new DescendantFilter("exch:citation",
-//								new ChildFilter("patcit", 
-//									new ChildFilter("document-id",
-//										new BranchFilter(new SaxFilter[] {
-//												new ChildFilter(
-//														"country",
-//														patcitCountry),
-//												new ChildFilter(
-//														"doc-number",
-//														patcitDocNumber),
-//												new ChildFilter("kind",
-//														patcitKind) },
-//												new PredicateEndpoint()))))));
-//			
-//			driver.filter = filter;
-//			driver.endpoints = new SaxFilter[] {
-//					country, docNumber, kind, 
-//					patcitCountry, patcitDocNumber, patcitKind };
-			
-			// now parse
-//			SAXParser saxParser = factory.newSAXParser();			
-//			long start = System.currentTimeMillis();
-//			saxParser.parse(new File("/tmp/DOCDB-200906-001-AP-0001.xml"), driver);
-//			System.out.println("done in " + (System.currentTimeMillis() - start) + "ms");
-			
-			if (args.length < 2) {
-				System.out.println("Usage: xml2csv XPATH FILES");
-			}
-			
-			XML2CSV driver = new XML2CSV(args[0]);
-			SAXParser saxParser = factory.newSAXParser();
-			
-			for (int i = 1; i < args.length; i++) {
-				saxParser.parse(new File(args[i]), driver);
-			}
-					
-		} catch (Throwable err) {
-			err.printStackTrace();
-		}
-	}
+//			for (int i = 1; i < args.length; i++) {
+//				saxParser.parse(new File(args[i]), driver);
+//			}
+//					
+//		} catch (Throwable err) {
+//			err.printStackTrace();
+//		}
+//	}
 }

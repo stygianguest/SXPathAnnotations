@@ -4,6 +4,7 @@ import org.xml.sax.Attributes;
 
 //TODO: make this class entirely abstract and move the 'next' to the filters
 //TODO: add a select() as the counterparty of deselect()
+//TODO: abstract from the returned boolean to allow endpoint specific return values
 public abstract class SaxFilter {
 	
 	SaxFilter next;
@@ -38,5 +39,7 @@ public abstract class SaxFilter {
 	}
 	
 	public abstract SaxFilter fork();
+	
+	public abstract SaxFilter merge(SaxFilter filter);
 
 }

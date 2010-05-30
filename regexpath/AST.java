@@ -3,24 +3,22 @@ package regexpath;
 
 import java.util.Arrays;
 
-import filters.*;
-
 //TODO: add negative predicates!
 public class AST {
 	
 	Axis axis;
 	String value;
 	AST[] predicates;
-	AST[] children;
+	private AST[] children;
 	
 	AST child;
 	
 	public AST[] getBranches() {
-		return children;
+		return getChildren();
 	}
 
 	public void setBranches(AST[] branches) {
-		this.children = branches;
+		this.setChildren(branches);
 	}
 
 	public Axis getAxis() {
@@ -37,52 +35,6 @@ public class AST {
 
 	public String getValue() {
 		return value;
-	}
-	
-	public SaxFilter toSaxFilter(boolean isPredicate) {
-		SaxFilter childfilter;
-		
-		if (child == null) {
-			if (isPredicate || children.length > 0)
-				childfilter = new PredicateEndpoint();
-			else
-				childfilter = new SelectionEndpoint();
-		} else {
-			childfilter = child.toSaxFilter(isPredicate);  
-		}
-		
-		if (predicates.length > 0) {
-			SaxFilter[] predFilters = new SaxFilter[predicates.length];
-			
-			for (int i = 0; i < predicates.length; i++)
-				predFilters[i] = predicates[i].toSaxFilter(true);
-			
-			childfilter = new BranchFilter(predFilters, childfilter);
-		}
-		
-		if (children.length > 0) {
-			SaxFilter[] branchFilters = new SaxFilter[children.length];
-			
-			for (int i = 0; i < children.length; i++)
-				branchFilters[i] = children[i].toSaxFilter(isPredicate);
-			
-			childfilter = new BranchFilter(branchFilters, childfilter);
-		}
-				
-		switch (axis) {
-		case Child :
-			return new ChildFilter(value, childfilter);
-		case Descendant :
-			return new DescendantFilter(value, childfilter);
-		case Attribute :
-			return new AttributeFilter(value, childfilter);
-		case Text : //TODO: create filter
-			return null;
-		case Match : //TODO: create filter
-			return null;
-		default : 
-			return null;
-		}
 	}
 
 	public AST(Axis axis, String value, AST child) {
@@ -106,7 +58,7 @@ public class AST {
 		this.axis = axis;
 		this.value = value;
 		this.predicates = predicates;
-		this.children = branches;
+		this.setChildren(branches);
 		this.child = child;
 	}
 	
@@ -251,5 +203,13 @@ public class AST {
 		} else if (!value.equals(other.value))
 			return false;
 		return true;
+	}
+
+	public void setChildren(AST[] children) {
+		this.children = children;
+	}
+
+	public AST[] getChildren() {
+		return children;
 	}
 }
