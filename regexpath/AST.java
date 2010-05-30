@@ -43,7 +43,7 @@ public class AST {
 		SaxFilter childfilter;
 		
 		if (child == null) {
-			if (isPredicate)
+			if (isPredicate || children.length > 0)
 				childfilter = new PredicateEndpoint();
 			else
 				childfilter = new SelectionEndpoint();
