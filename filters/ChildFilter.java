@@ -2,13 +2,14 @@ package filters;
 
 import org.xml.sax.Attributes;
 
-public class ChildFilter extends SaxFilter {
+public class ChildFilter implements SaxFilter {
 
 	public ChildFilter(String tagname, SaxFilter next) {
-		super(next);
+		this.next = next;
 		this.tagname = tagname;
 	}
 	
+	SaxFilter next;
 	String tagname;
 	int depth = 0;
 	boolean isMatch = false;
@@ -18,7 +19,7 @@ public class ChildFilter extends SaxFilter {
 		depth++;
 		
 		if (isMatch) // note isMatch => depth > 1
-			return super.startElement(uri, localName, qName);
+			return next.startElement(uri, localName, qName);
 		
 		if (depth == 1)
 			isMatch = tagname.equals(qName);
@@ -29,7 +30,7 @@ public class ChildFilter extends SaxFilter {
 	@Override
 	public boolean attributes(Attributes attributes) {
 		if (isMatch)
-			return super.attributes(attributes);
+			return next.attributes(attributes);
 		
 		return false;
 	}
@@ -37,7 +38,7 @@ public class ChildFilter extends SaxFilter {
 	@Override
 	public boolean characters(char[] ch, int start, int length) {
 		if (isMatch)
-			return super.characters(ch, start, length);
+			return next.characters(ch, start, length);
 		
 		return false;
 	}
@@ -60,6 +61,16 @@ public class ChildFilter extends SaxFilter {
 	@Override
 	public SaxFilter fork() {
 		return new ChildFilter(tagname, next.fork());
+	}
+
+	@Override
+	public boolean deselect() {
+		return false;
+	}
+
+	@Override
+	public SelectionEndpoint[] getEndpoints() {
+		return next.getEndpoints();
 	}
 
 }

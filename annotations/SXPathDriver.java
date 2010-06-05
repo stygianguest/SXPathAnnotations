@@ -48,8 +48,7 @@ public class SXPathDriver extends DefaultHandler {
 				if (selection == null)
 					throw new RuntimeException("No selection for xpath triggered method parameter");
 
-				filter = filter.merge(parseSaxFilter(selection, false));
-				
+//				filter = filter.merge(parseSaxFilter(selection, false));
 			}
 		}
 	}
@@ -59,11 +58,11 @@ public class SXPathDriver extends DefaultHandler {
 		return ASTtoSaxFilter(parser.parseNode(path), true);
 	}
 	
-	private static SaxFilter ASTtoSaxFilter(AST ast, boolean isPredicate) {
+	public static SaxFilter ASTtoSaxFilter(AST ast, boolean isPredicate) {
 		SaxFilter childfilter;
 		
 		if (ast.getChild() == null) {
-			if (isPredicate)
+			if (isPredicate || ast.getChildren().length > 0)
 				childfilter = new PredicateEndpoint();
 			else
 				childfilter = new SelectionEndpoint();
@@ -72,21 +71,23 @@ public class SXPathDriver extends DefaultHandler {
 		}
 		
 		if (ast.getPredicates().length > 0) {
-			SaxFilter[] predFilters = new SaxFilter[ast.getPredicates().length];
+			SaxFilter[] predFilters = new SaxFilter[ast.getPredicates().length+1];
 			
 			for (int i = 0; i < ast.getPredicates().length; i++)
 				predFilters[i] = ASTtoSaxFilter(ast.getPredicates()[i], true);
 			
-			childfilter = new BranchFilter(predFilters, childfilter);
+			predFilters[predFilters.length-1] = childfilter;
+			childfilter = new BranchFilter(predFilters);
 		}
 		
 		if (ast.getChildren().length > 0) {
-			SaxFilter[] branchFilters = new SaxFilter[ast.getChildren().length];
+			SaxFilter[] branchFilters = new SaxFilter[ast.getChildren().length+1];
 			
 			for (int i = 0; i < ast.getChildren().length; i++)
 				branchFilters[i] = ASTtoSaxFilter(ast.getChildren()[i], isPredicate);
 			
-			childfilter = new BranchFilter(branchFilters, childfilter);
+			branchFilters[branchFilters.length-1] = childfilter;
+			childfilter = new BranchFilter(branchFilters);
 		}
 				
 		switch (ast.getAxis()) {

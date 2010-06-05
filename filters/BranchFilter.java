@@ -5,10 +5,9 @@ import java.util.Vector;
 
 import org.xml.sax.Attributes;
 
-public class BranchFilter extends SaxFilter {
+public class BranchFilter implements SaxFilter {
 	
-	public BranchFilter(SaxFilter[] nexts, SaxFilter next) {
-		super(next);
+	public BranchFilter(SaxFilter[] nexts) {
 		this.nexts = nexts;
 	}
 	
@@ -22,8 +21,7 @@ public class BranchFilter extends SaxFilter {
 				counter++;
 		}
 		
-		return next.startElement(uri, localName, qName) 
-				&& counter == nexts.length;
+		return counter == nexts.length;
 	}
 	
 	@Override
@@ -33,8 +31,7 @@ public class BranchFilter extends SaxFilter {
 				counter++;
 		}
 		
-		return next.attributes(attributes)
-				&& counter == nexts.length;
+		return counter == nexts.length;
 	}
 
 	@Override
@@ -45,8 +42,7 @@ public class BranchFilter extends SaxFilter {
 				counter++;
 		}
 		
-		return next.characters(ch, start, length)
-				&& counter == nexts.length;
+		return counter == nexts.length;
 	}
 
 	@Override
@@ -56,18 +52,20 @@ public class BranchFilter extends SaxFilter {
 				counter++;
 		}
 		
-		return next.endElement(uri, localName, qName)
-				&& counter == nexts.length;
+		return counter == nexts.length;
 	}
 	
 	@Override
 	public boolean deselect() {
-		for (SaxFilter next : nexts)
-			next.deselect(); //FIXME: shouldn't we do something with the values?
+		for (SaxFilter next : nexts) {
+			if (next.deselect())
+				counter++;
+		}
+		boolean isMatch = counter == nexts.length;
 		
 		counter = 0;
 		
-		return next.deselect();
+		return isMatch;
 	}
 
 
@@ -78,7 +76,7 @@ public class BranchFilter extends SaxFilter {
 		for (int i = 0; i < forkedNexts.length; i++)
 			forkedNexts[i] = nexts[i].fork();
 		
-		return new BranchFilter(forkedNexts, next.fork());
+		return new BranchFilter(forkedNexts);
 	}
 	
 	@Override
@@ -87,8 +85,6 @@ public class BranchFilter extends SaxFilter {
 		
 		for (SaxFilter branch : nexts)
 			endpoints.addAll(Arrays.asList(branch.getEndpoints()));
-		
-		endpoints.addAll(Arrays.asList(next.getEndpoints()));
 		
 		return endpoints.toArray(new SelectionEndpoint[] {});
 	}

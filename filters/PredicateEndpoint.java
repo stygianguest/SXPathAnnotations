@@ -2,10 +2,9 @@ package filters;
 
 import org.xml.sax.Attributes;
 
-public class PredicateEndpoint extends SaxFilter {
+public class PredicateEndpoint implements SaxFilter {
 
 	public PredicateEndpoint() {
-		super(null);
 	}
 
 	@Override

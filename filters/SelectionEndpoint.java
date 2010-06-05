@@ -3,10 +3,9 @@ package filters;
 import org.xml.sax.Attributes;
 
 //TODO: for now this only records text
-public class SelectionEndpoint extends SaxFilter {
+public class SelectionEndpoint implements SaxFilter {
 
 	public SelectionEndpoint() {
-		super(null);
 	}
 	
 	StringBuilder builder = new StringBuilder();

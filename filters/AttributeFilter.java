@@ -2,13 +2,14 @@ package filters;
 
 import org.xml.sax.Attributes;
 
-public class AttributeFilter extends SaxFilter {
+public class AttributeFilter implements SaxFilter {
 
 	public AttributeFilter(String attribute, SaxFilter next) {
-		super(next);
+		this.next = next;
 		this.attribute = attribute;
 	}
 	
+	SaxFilter next;
 	String attribute;
 	
 	int depth = 0;
@@ -48,6 +49,16 @@ public class AttributeFilter extends SaxFilter {
 	@Override
 	public SaxFilter fork() {
 		return new AttributeFilter(attribute, next.fork());
+	}
+
+	@Override
+	public boolean deselect() {
+		return false;
+	}
+
+	@Override
+	public SelectionEndpoint[] getEndpoints() {
+		return next.getEndpoints();
 	}
 
 }

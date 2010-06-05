@@ -4,13 +4,14 @@ import java.util.Stack;
 
 import org.xml.sax.Attributes;
 
-public class DescendantFilter extends SaxFilter {
+public class DescendantFilter implements SaxFilter {
 
 	public DescendantFilter(String tagname, SaxFilter next) {
-		super(next);
+		this.next = next;
 		this.tagname = tagname;
 	}
 	
+	SaxFilter next;
 	String tagname;
 	Stack<SaxFilter> stack = new Stack<SaxFilter>();
 	
@@ -64,6 +65,16 @@ public class DescendantFilter extends SaxFilter {
 	@Override
 	public SaxFilter fork() {
 		return new DescendantFilter(tagname, next.fork());
+	}
+
+	@Override
+	public boolean deselect() {
+		return false;
+	}
+
+	@Override
+	public SelectionEndpoint[] getEndpoints() {
+		return next.getEndpoints();
 	}
 
 }
