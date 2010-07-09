@@ -2,14 +2,14 @@ package filters;
 
 import org.xml.sax.Attributes;
 
-public class ChildFilter implements SaxFilter {
+public class ChildFilter<T> implements SaxFilter<T> {
 
-	public ChildFilter(String tagname, SaxFilter next) {
+	public ChildFilter(String tagname, SaxFilter<T> next) {
 		this.next = next;
 		this.tagname = tagname;
 	}
 	
-	SaxFilter next;
+	SaxFilter<T> next;
 	String tagname;
 	int depth = 0;
 	boolean isMatch = false;

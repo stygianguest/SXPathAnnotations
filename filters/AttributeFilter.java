@@ -2,27 +2,27 @@ package filters;
 
 import org.xml.sax.Attributes;
 
-public class AttributeFilter implements SaxFilter {
+public class AttributeFilter<T> implements SaxFilter<T> {
 
-	public AttributeFilter(String attribute, SaxFilter next) {
+	public AttributeFilter(String attribute, SaxFilter<T> next) {
 		this.next = next;
 		this.attribute = attribute;
 	}
 	
-	SaxFilter next;
+	SaxFilter<T> next;
 	String attribute;
 	
 	int depth = 0;
 	
 	@Override
-	public boolean startElement(String uri, String localName, String qName) {
+	public ReturnValue<T> startElement(String uri, String localName, String qName) {
 		depth++;
 
-		return false;
+		return new ReturnValue.Nothing<T>();
 	}
 	
 	@Override
-	public boolean attributes(Attributes attributes) {
+	public ReturnValue<T> attributes(Attributes attributes) {
 		if (depth == 0) {
 			String value = attributes.getValue(attribute);
 			
@@ -32,30 +32,30 @@ public class AttributeFilter implements SaxFilter {
 			}
 		}
 		
-		return false;
+		return new ReturnValue.Nothing<T>();
 	}
 
 	@Override
-	public boolean characters(char[] ch, int start, int length) {
-		return false;
+	public ReturnValue<T> characters(char[] ch, int start, int length) {
+		return new ReturnValue.Nothing<T>();
 	}
 
 	@Override
-	public boolean endElement(String uri, String localName, String qName) {
+	public ReturnValue<T> endElement(String uri, String localName, String qName) {
 		depth--;
-		return false;
+		return new ReturnValue.Nothing<T>();
 	}
 
 	@Override
-	public SaxFilter fork() {
-		return new AttributeFilter(attribute, next.fork());
+	public ReturnValue<T> deselect() {
+		return new ReturnValue.Nothing<T>();
 	}
 
 	@Override
-	public boolean deselect() {
-		return false;
+	public SaxFilter<T> fork() {
+		return new AttributeFilter<T>(attribute, next.fork());
 	}
-
+	
 	@Override
 	public SelectionEndpoint[] getEndpoints() {
 		return next.getEndpoints();
