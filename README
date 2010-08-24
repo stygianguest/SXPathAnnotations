@@ -1,6 +1,26 @@
+RegeXPath Expressions
+---------------------
+
+This package provides a number of utilities and a library that facilitate the processing of streaming XML files using XPATH and regular expressions.
+They should prove especially usefull to extract data from XML streams or very large XML files.
+As such, the focus is on speed and simplicity rather than expressivity.
+If you are looking for a full implementation of XPATH, this is not the software you are looking for.
+If, on the other hand, you are looking for an easy to use and fast way to extract information from your XML data, this might save your day.
+
+At the core of this package is a set of XPATH based SAX filters that can select information from the XML of your choosing.
+These filters eargerly evaluate the XPATH expressions, that is, the filtered out information will be returned as soon as possible.
+This minimizes memory usage and enables the construction of a pipeline.
+Eager evaluation also means that results will be returned even for incorrect XML files, at least before the error occurs.
+Recovery from errors depends entirely on the error and the particular selection you have chosen.
+
+Based on the filters, this package supplies two utilities.
+- A commandline utility in the unix tradition called xml2csv that can be used to convert XML files to tables represented by comma separated values (CSV).
+- A java annotation library that will call annotated java function when cert
+
+
 Use-cases
 
-- Importing XML data into an SQL database
+- Importing XML data into an SQL database or more generically, extracting table based information from an xml database. The filters could very well be used to create a stand alone utility that allows one to extract tables, such as csv files, from an xml file. However, when importing data to a normalized database with respect to the XML structure, it is probably more effective to use the annotations.
 - Authentication layer for a SOAP server
 - Monitoring and logging XML streams
 - Interpreting a GUI definition file
