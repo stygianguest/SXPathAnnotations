@@ -1,27 +1,25 @@
 package filters;
 
 import org.xml.sax.Attributes;
+import java.util.Iterator;
 
 //TODO: add a select() as the counterparty of deselect()
 //TODO: abstract from the returned boolean to allow endpoint specific return values
 public interface SaxFilter<T> {
 
-	public ReturnValue<T> characters(char[] ch, int start, int length);
+	public Iterator<T> characters(char[] ch, int start, int length);
 	
-	public ReturnValue<T> endElement(String uri, String localName, String qName);
+	public Iterator<T> endElement(String uri, String localName, String qName);
 	
-	public ReturnValue<T> deselect();
+	public Iterator<T> deselect();
 	
-	public ReturnValue<T> startElement(String uri, String localName, String qName);
+	public Iterator<T> startElement(String uri, String localName, String qName);
 	
-	public ReturnValue<T> attributes(Attributes attributes);
-	
-	
-	public SelectionEndpoint[] getEndpoints();
+	public Iterator<T> attributes(Attributes attributes);
 	
 	public SaxFilter<T> fork();
 	
-	//TODO: add and implement this function
+	//TODO: add and implement this function?
 //	public abstract SaxFilter merge(SaxFilter filter);
 
 }

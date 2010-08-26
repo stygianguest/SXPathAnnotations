@@ -1,92 +1,81 @@
 package filters;
 
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.xml.sax.Attributes;
 
-public class BranchFilter implements SaxFilter {
+public class BranchFilter<L,R> implements SaxFilter<Pair<L,R>> {
 	
-	public BranchFilter(SaxFilter[] nexts) {
-		this.nexts = nexts;
-	}
-	
-	SaxFilter[] nexts;
-	int counter = 0;
-
-	@Override
-	public boolean startElement(String uri, String localName, String qName)  {
-		for (SaxFilter next : nexts) {
-			if (next.startElement(uri, localName, qName))
-				counter++;
-		}
-		
-		return counter == nexts.length;
+	public BranchFilter(SaxFilter<L> left, SaxFilter<R> right) {
+        this.left = left;
+        this.right = right;
 	}
 	
-	@Override
-	public boolean attributes(Attributes attributes) {
-		for (SaxFilter next : nexts) {
-			if (next.attributes(attributes))
-				counter++;
-		}
+	SaxFilter<L> left;
+	SaxFilter<R> right;
+
+    Vector<L> leftBuffer;
+    Vector<R> rightBuffer;
+
+    private Iterator<Pair<L,R>> crossProduct(Iterator<L> leftNewIt, Iterator<R> rightNewIt) {
+        Vector<Pair<L,R>> newPairs = new Vector<Pair<L,R>>();
+        while (leftNewIt.hasNext()) {
+            L lval = leftNewIt.next();
+            leftBuffer.add(lval);
+            for (R rval : rightBuffer)
+                newPairs.add(new Pair<L,R>(lval, rval));
+        }
+        while (rightNewIt.hasNext()) {
+            R rval = rightNewIt.next();
+            rightBuffer.add(rval);
+            for (L lval : leftBuffer)
+                newPairs.add(new Pair<L,R>(lval, rval));
+        }
 		
-		return counter == nexts.length;
-	}
+		return newPairs.iterator();
+    }
 
 	@Override
-	public boolean characters(char[] ch, int start, int length) {
-		
-		for (SaxFilter next : nexts) {
-			if (next.characters(ch, start, length))
-				counter++;
-		}
-		
-		return counter == nexts.length;
-	}
-
-	@Override
-	public boolean endElement(String uri, String localName, String qName) {
-		for (SaxFilter next : nexts) {
-			if (next.endElement(uri, localName, qName))
-				counter++;
-		}
-		
-		return counter == nexts.length;
+	public Iterator<Pair<L,R>> startElement(String uri, String localName, String qName)  {
+        return crossProduct(left.startElement(uri, localName, qName),
+                right.startElement(uri, localName, qName));
 	}
 	
 	@Override
-	public boolean deselect() {
-		for (SaxFilter next : nexts) {
-			if (next.deselect())
-				counter++;
-		}
-		boolean isMatch = counter == nexts.length;
-		
-		counter = 0;
-		
-		return isMatch;
+	public Iterator<Pair<L,R>> attributes(Attributes attributes) {
+        return crossProduct(left.attributes(attributes),
+                right.attributes(attributes));
 	}
 
+	@Override
+	public Iterator<Pair<L,R>> characters(char[] ch, int start, int length) {
+        return crossProduct(left.characters(ch, start, length),
+                right.characters(ch, start, length));
+	}
 
 	@Override
-	public SaxFilter fork() {
-		SaxFilter[] forkedNexts = new SaxFilter[nexts.length];
-		
-		for (int i = 0; i < forkedNexts.length; i++)
-			forkedNexts[i] = nexts[i].fork();
-		
-		return new BranchFilter(forkedNexts);
+	public Iterator<Pair<L,R>> endElement(String uri, String localName, String qName) {
+        return crossProduct(left.endElement(uri, localName, qName),
+                right.endElement(uri, localName, qName));
 	}
 	
 	@Override
-	public SelectionEndpoint[] getEndpoints() {
-		Vector<SelectionEndpoint> endpoints = new Vector<SelectionEndpoint>();
+	public Iterator<Pair<L,R>> deselect() {
+		Iterator<Pair<L,R>> result = crossProduct(left.deselect(), right.deselect());
+        leftBuffer = new Vector<L>();
+        rightBuffer = new Vector<R>();
+        return result;
+	}
+
+
+	@Override
+	public SaxFilter<Pair<L,R>> fork() {
+        BranchFilter<L,R> fork = new BranchFilter<L,R>(left.fork(), right.fork());
+        fork.rightBuffer = new Vector<R>(this.rightBuffer);
+        fork.leftBuffer = new Vector<L>(this.leftBuffer);
 		
-		for (SaxFilter branch : nexts)
-			endpoints.addAll(Arrays.asList(branch.getEndpoints()));
-		
-		return endpoints.toArray(new SelectionEndpoint[] {});
+		return fork;
 	}
 
 }
