@@ -1,5 +1,7 @@
 package filters;
 
+import java.util.Iterator;
+
 import org.xml.sax.Attributes;
 
 public class ChildFilter<T> implements SaxFilter<T> {
@@ -15,7 +17,7 @@ public class ChildFilter<T> implements SaxFilter<T> {
 	boolean isMatch = false;
 	
 	@Override
-	public boolean startElement(String uri, String localName, String qName) {
+	public Iterator<T> startElement(String uri, String localName, String qName) {
 		depth++;
 		
 		if (isMatch) // note isMatch => depth > 1
@@ -24,27 +26,27 @@ public class ChildFilter<T> implements SaxFilter<T> {
 		if (depth == 1)
 			isMatch = tagname.equals(qName);
 			
-		return false; // FIXME: this is strange.. shouldn't we return isMatch?
+		return new EmptyIterator<T>();
 	}
 	
 	@Override
-	public boolean attributes(Attributes attributes) {
+	public Iterator<T> attributes(Attributes attributes) {
 		if (isMatch)
 			return next.attributes(attributes);
 		
-		return false;
+		return new EmptyIterator<T>();
 	}
 
 	@Override
-	public boolean characters(char[] ch, int start, int length) {
+	public Iterator<T> characters(char[] ch, int start, int length) {
 		if (isMatch)
 			return next.characters(ch, start, length);
 		
-		return false;
+		return new EmptyIterator<T>();
 	}
 
 	@Override
-	public boolean endElement(String uri, String localName, String qName) {
+	public Iterator<T> endElement(String uri, String localName, String qName) {
 		depth--;
 		
 		if (depth == 0 && isMatch) {
@@ -55,22 +57,22 @@ public class ChildFilter<T> implements SaxFilter<T> {
 		if (isMatch)
 			return next.endElement(uri, localName, qName);
 		
-		return false;
+		return new EmptyIterator<T>();
 	}
 
 	@Override
-	public SaxFilter fork() {
-		return new ChildFilter(tagname, next.fork());
+	public Iterator<T> deselect() {
+        //FIXME: returning empty iterator here is justified because a deselect
+        //should have been preceded by endElement, which would already have
+        //generated a deselect, howerver, in case of erroneous xml files
+        //(missing end-tags) it might be better to deselect anyway (and return
+        //the results)
+		return new EmptyIterator<T>();
 	}
 
 	@Override
-	public boolean deselect() {
-		return false;
-	}
-
-	@Override
-	public SelectionEndpoint[] getEndpoints() {
-		return next.getEndpoints();
+	public SaxFilter<T> fork() {
+		return new ChildFilter<T>(tagname, next.fork());
 	}
 
 }

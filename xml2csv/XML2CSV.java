@@ -1,6 +1,7 @@
 package xml2csv;
 
 import java.io.File;
+import java.util.Iterator;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -20,14 +21,13 @@ import filters.PredicateEndpoint;
 import filters.SaxFilter;
 import filters.SelectionEndpoint;
 
+@SuppressWarnings("unchecked")
 public class XML2CSV extends DefaultHandler {
 	
 	SaxFilter filter;
-	SaxFilter[] endpoints;
 	
 	public XML2CSV() {
 	}
-	
 	
 	public static SaxFilter ASTtoSaxFilter(AST ast, boolean isPredicate) {
 		SaxFilter childfilter;
@@ -41,25 +41,14 @@ public class XML2CSV extends DefaultHandler {
 			childfilter = ASTtoSaxFilter(ast.getChild(), isPredicate);  
 		}
 		
-		if (ast.getPredicates().length > 0) {
-			SaxFilter[] predFilters = new SaxFilter[ast.getPredicates().length+1];
-			
-			for (int i = 0; i < ast.getPredicates().length; i++)
-				predFilters[i] = ASTtoSaxFilter(ast.getPredicates()[i], true);
-			
-			predFilters[predFilters.length-1] = childfilter;
-			childfilter = new BranchFilter(predFilters);
-		}
+		for (AST pred : ast.getPredicates())
+			childfilter = new BranchFilter(childfilter,
+					ASTtoSaxFilter(pred, true));
+
 		
-		if (ast.getChildren().length > 0) {
-			SaxFilter[] branchFilters = new SaxFilter[ast.getChildren().length+1];
-			
-			for (int i = 0; i < ast.getChildren().length; i++)
-				branchFilters[i] = ASTtoSaxFilter(ast.getChildren()[i], isPredicate);
-			
-			branchFilters[branchFilters.length-1] = childfilter;
-			childfilter = new BranchFilter(branchFilters);
-		}
+		for (AST child : ast.getChildren())
+			childfilter = new BranchFilter(childfilter,
+					ASTtoSaxFilter(child, isPredicate));			
 				
 		switch (ast.getAxis()) {
 		case Child :
@@ -81,46 +70,34 @@ public class XML2CSV extends DefaultHandler {
 		Parser parser = new Parser();
 		
 		filter = ASTtoSaxFilter(parser.parseNode(xpath), false);
-		endpoints = filter.getEndpoints();
 	}
 	
 	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
-		
-		//FIXME: can we even match twice?
-		if (filter.startElement(uri, localName, qName))
-			processMatch();
-		
-		if (filter.attributes(attributes))
-			processMatch();
+		//FIXME: can we match twice?
+		printRows(filter.startElement(uri, localName, qName));		
+		printRows(filter.attributes(attributes));
 	}
 	
 	@Override
 	public void characters(char[] ch, int start, int length)
 			throws SAXException {
 		
-		if (filter.characters(ch, start, length))
-			processMatch();
+		printRows(filter.characters(ch, start, length));
 	}
 
 	@Override
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
 		
-		if (filter.endElement(uri, localName, qName))
-			processMatch();
+		printRows(filter.endElement(uri, localName, qName));
 	}
 	
-	void processMatch() {
-		for (int i = 0; i < endpoints.length; i++) {
-			System.out.print(endpoints[i].toString());
-		
-			if (i+1 < endpoints.length)
-				System.out.print(",");
-		}
-		
-		System.out.print("\n");
+	
+	void printRows(Iterator it) {
+		while (it.hasNext())
+			System.out.println(it.next().toString());
 	}
 	
 	public static void main(String[] args) {

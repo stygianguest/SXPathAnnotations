@@ -1,80 +1,75 @@
 package filters;
 
+import java.util.Iterator;
 import java.util.Stack;
 
 import org.xml.sax.Attributes;
 
-public class DescendantFilter implements SaxFilter {
+public class DescendantFilter<T> implements SaxFilter<T> {
 
-	public DescendantFilter(String tagname, SaxFilter next) {
+	public DescendantFilter(String tagname, SaxFilter<T> next) {
 		this.next = next;
 		this.tagname = tagname;
 	}
 	
-	SaxFilter next;
+	SaxFilter<T> next;
 	String tagname;
-	Stack<SaxFilter> stack = new Stack<SaxFilter>();
+	Stack<SaxFilter<T>> stack = new Stack<SaxFilter<T>>();
 	
 	@Override
-	public boolean startElement(String uri, String localName, String qName) {
-		boolean match = false;
+	public Iterator<T> startElement(String uri, String localName, String qName) {
+		Iterator<T> results = new EmptyIterator<T>();
 		
-		for ( SaxFilter filter : stack )
-			match = filter.startElement(uri, localName, qName) || match;
+		for ( SaxFilter<T> filter : stack )
+			results = AppendIterator.append(results, filter.startElement(uri, localName, qName));
 		
 		if (tagname.equals(qName))
 			stack.push(next.fork());
 		
-		return match;
+		return results;
 	}
 	
 	@Override
-	public boolean attributes(Attributes attributes) {
-		boolean match = false;
+	public Iterator<T> attributes(Attributes attributes) {
+		Iterator<T> results = new EmptyIterator<T>();
 		
-		for (SaxFilter filter : stack)
-			match = filter.attributes(attributes) || match;
+		for (SaxFilter<T> filter : stack)
+			results = AppendIterator.append(results, filter.attributes(attributes));
 		
-		return match;
+		return results;
 	}
 
 	@Override
-	public boolean characters(char[] ch, int start, int length) {
-		boolean match = false;
+	public Iterator<T> characters(char[] ch, int start, int length) {
+		Iterator<T> results = new EmptyIterator<T>();
 		
-		for ( SaxFilter filter : stack )
-			match = filter.characters(ch, start, length) || match;
+		for ( SaxFilter<T> filter : stack )
+			results = AppendIterator.append(results, filter.characters(ch, start, length));
 		
-		return match;
+		return results;
 	}
 
 	@Override
-	public boolean endElement(String uri, String localName, String qName) {
-		boolean match = false;
+	public Iterator<T> endElement(String uri, String localName, String qName) {
+		Iterator<T> results = new EmptyIterator<T>();
 		
-		if (tagname.equals(qName)) {
-			match = stack.pop().deselect();
-		}
+		if (tagname.equals(qName))
+			results = AppendIterator.append(results, stack.pop().deselect());
 
-		for ( SaxFilter filter : stack )
-			match = filter.endElement(uri, localName, qName) || match;
+		for ( SaxFilter<T> filter : stack )
+            results = AppendIterator.append(results, filter.endElement(uri, localName, qName));
 
-		return match;
+		return results;
 	}
 
 	@Override
-	public SaxFilter fork() {
-		return new DescendantFilter(tagname, next.fork());
+	public Iterator<T> deselect() {
+        //FIXME: see ChildFilter.deselect()
+		return new EmptyIterator<T>();
 	}
 
 	@Override
-	public boolean deselect() {
-		return false;
+	public SaxFilter<T> fork() {
+		return new DescendantFilter<T>(tagname, next.fork());
 	}
-
-	@Override
-	public SelectionEndpoint[] getEndpoints() {
-		return next.getEndpoints();
-	}
-
 }

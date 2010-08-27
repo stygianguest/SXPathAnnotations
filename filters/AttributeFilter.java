@@ -1,5 +1,7 @@
 package filters;
 
+import java.util.Iterator;
+
 import org.xml.sax.Attributes;
 
 public class AttributeFilter<T> implements SaxFilter<T> {
@@ -15,50 +17,45 @@ public class AttributeFilter<T> implements SaxFilter<T> {
 	int depth = 0;
 	
 	@Override
-	public ReturnValue<T> startElement(String uri, String localName, String qName) {
+	public Iterator<T> startElement(String uri, String localName, String qName) {
 		depth++;
 
-		return new ReturnValue.Nothing<T>();
+		return new EmptyIterator<T>();
 	}
 	
 	@Override
-	public ReturnValue<T> attributes(Attributes attributes) {
+	public Iterator<T> attributes(Attributes attributes) {
 		if (depth == 0) {
 			String value = attributes.getValue(attribute);
 			
 			if (value != null) {
-				next.characters(value.toCharArray(), 0, value.length());
-				return next.deselect();
+				return AppendIterator.append(
+                    next.characters(value.toCharArray(), 0, value.length()),
+                    next.deselect());
 			}
 		}
 		
-		return new ReturnValue.Nothing<T>();
+		return new EmptyIterator<T>();
 	}
 
 	@Override
-	public ReturnValue<T> characters(char[] ch, int start, int length) {
-		return new ReturnValue.Nothing<T>();
+	public Iterator<T> characters(char[] ch, int start, int length) {
+		return new EmptyIterator<T>();
 	}
 
 	@Override
-	public ReturnValue<T> endElement(String uri, String localName, String qName) {
+	public Iterator<T> endElement(String uri, String localName, String qName) {
 		depth--;
-		return new ReturnValue.Nothing<T>();
+		return new EmptyIterator<T>();
 	}
 
 	@Override
-	public ReturnValue<T> deselect() {
-		return new ReturnValue.Nothing<T>();
+	public Iterator<T> deselect() {
+		return new EmptyIterator<T>();
 	}
 
 	@Override
 	public SaxFilter<T> fork() {
 		return new AttributeFilter<T>(attribute, next.fork());
 	}
-	
-	@Override
-	public SelectionEndpoint[] getEndpoints() {
-		return next.getEndpoints();
-	}
-
 }

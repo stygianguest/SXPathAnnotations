@@ -1,60 +1,83 @@
 package filters;
 
+import java.util.Iterator;
+
 import org.xml.sax.Attributes;
 
-//TODO: for now this only records text
-public class SelectionEndpoint implements SaxFilter {
+//TODO: build more of these to handle the different types, and support regular expressions
+//TODO: for now this only records text it should record the original xml content
+public class SelectionEndpoint implements SaxFilter<String> {
 
 	public SelectionEndpoint() {
 	}
 	
 	StringBuilder builder = new StringBuilder();
-	String value;
-
 
 	@Override
-	public boolean startElement(String uri, String localName, String qName) {
-		return false;
+	public Iterator<String> startElement(String uri, String localName, String qName) {
+		return new EmptyIterator<String>();
 	}
 	
 	@Override
-	public boolean attributes(Attributes attributes) {
-		return false;
+	public Iterator<String> attributes(Attributes attributes) {
+		return new EmptyIterator<String>();
 	}
 
 
 	@Override
-	public boolean characters(char[] ch, int start, int length) {
+	public Iterator<String> characters(char[] ch, int start, int length) {
 		builder.append(ch, start, length);
-		return false;
+		return new EmptyIterator<String>();
 	}
 
 
 	@Override
-	public boolean endElement(String uri, String localName, String qName) {
-		return false;
+	public Iterator<String> endElement(String uri, String localName, String qName) {
+		return new EmptyIterator<String>();
 	}
 
 
 	@Override
-	public boolean deselect() {
-		value = builder.toString();
+	public Iterator<String> deselect() {
+		String value = builder.toString();
 		builder = new StringBuilder();
-		return true;
+		return new SingletonIterator<String>(value);
 	}
 
 	@Override
-	public SaxFilter fork() {
+	public SaxFilter<String> fork() {
+		//FIXME: we really don't need to copy the value?!
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		return value;
+		return builder.toString();
 	}
-	
-	@Override
-	public SelectionEndpoint[] getEndpoints() {
-		return new SelectionEndpoint[] {this};
-	}
+
+    class SingletonIterator<V> implements Iterator<V> {
+    	
+    	public SingletonIterator(V value) {
+			this.value = value;
+		}
+    	
+    	private V value = null;
+    	
+		@Override
+		public boolean hasNext() {
+			return value != null;
+		}
+
+		@Override
+		public V next() {
+			V value = this.value;
+			this.value = null;
+			return value;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+    }
 }

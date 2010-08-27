@@ -15,8 +15,11 @@ public class BranchFilter<L,R> implements SaxFilter<Pair<L,R>> {
 	SaxFilter<L> left;
 	SaxFilter<R> right;
 
-    Vector<L> leftBuffer;
-    Vector<R> rightBuffer;
+	//FIXME: in case of nested branches, these buffers will contain an 
+	// exponential number of duplicates, which takes too much space
+	// instead, we should regenerate the combinations when they are needed
+    Vector<L> leftBuffer = new Vector<L>();
+    Vector<R> rightBuffer = new Vector<R>();
 
     private Iterator<Pair<L,R>> crossProduct(Iterator<L> leftNewIt, Iterator<R> rightNewIt) {
         Vector<Pair<L,R>> newPairs = new Vector<Pair<L,R>>();

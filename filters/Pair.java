@@ -9,4 +9,9 @@ public class Pair<L,R> {
 
     public L left;
     public R right;
+    
+	@Override
+	public String toString() {
+		return left.toString() + "," + right.toString();
+	}
 }
