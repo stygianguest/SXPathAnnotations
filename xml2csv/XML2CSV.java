@@ -147,6 +147,7 @@ public class XML2CSV extends DefaultHandler {
 			
 			if (args.length < 2) {
 				System.out.println("Usage: xml2csv XPATH FILES");
+				return;
 			}
 			
 			XML2CSV driver = new XML2CSV(args[0]);
