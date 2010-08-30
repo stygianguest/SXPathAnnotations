@@ -38,8 +38,8 @@ public class Parser {
 		case CharacterIterator.DONE: // EOF
 			return null;
 		default:
-			// TODO: error, raise exception
-			return null;
+			//TODO: throw a proper error message
+			throw new RuntimeException("Parsing xpath expression failed");
 		}
 		
 		return new AST
