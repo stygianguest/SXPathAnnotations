@@ -10,16 +10,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import regexpath.AST;
-import regexpath.Parser;
-
-import filters.AttributeFilter;
-import filters.BranchFilter;
-import filters.ChildFilter;
-import filters.DescendantFilter;
-import filters.PredicateEndpoint;
-import filters.SaxFilter;
-import filters.SelectionEndpoint;
+import filters.*;
 
 @SuppressWarnings("unchecked")
 public class XML2CSV extends DefaultHandler {
@@ -29,46 +20,46 @@ public class XML2CSV extends DefaultHandler {
 	public XML2CSV() {
 	}
 	
-	public static SaxFilter ASTtoSaxFilter(AST ast, boolean isPredicate) {
-		SaxFilter childfilter;
-		
-		if (ast.getChild() == null) {
-			if (isPredicate || ast.getChildren().length > 0)
-				childfilter = new PredicateEndpoint();
-			else
-				childfilter = new SelectionEndpoint();
-		} else {
-			childfilter = ASTtoSaxFilter(ast.getChild(), isPredicate);  
-		}
-		
-		for (AST pred : ast.getPredicates())
-			childfilter = new BranchFilter(childfilter,
-					ASTtoSaxFilter(pred, true));
-		
-		for (AST child : ast.getChildren())
-			childfilter = new BranchFilter(childfilter,
-					ASTtoSaxFilter(child, isPredicate));			
-				
-		switch (ast.getAxis()) {
-		case Child :
-			return new ChildFilter(ast.getValue(), childfilter);
-		case Descendant :
-			return new DescendantFilter(ast.getValue(), childfilter);
-		case Attribute :
-			return new AttributeFilter(ast.getValue(), childfilter);
-		case Text : //TODO: create filter
-			return null;
-		case Match : //TODO: create filter
-			return null;
-		default : 
-			return null;
-		}
-	}
+//	public static SaxFilter ASTtoSaxFilter(AST ast, boolean isPredicate) {
+//		SaxFilter childfilter;
+//		
+//		if (ast.getChild() == null) {
+//			if (isPredicate || ast.getChildren().length > 0)
+//				childfilter = new PredicateEndpoint();
+//			else
+//				childfilter = new SelectionEndpoint();
+//		} else {
+//			childfilter = ASTtoSaxFilter(ast.getChild(), isPredicate);  
+//		}
+//		
+//		for (AST pred : ast.getPredicates())
+//			childfilter = new BranchFilter(childfilter,
+//					ASTtoSaxFilter(pred, true));
+//		
+//		for (AST child : ast.getChildren())
+//			childfilter = new BranchFilter(childfilter,
+//					ASTtoSaxFilter(child, isPredicate));			
+//				
+//		switch (ast.getAxis()) {
+//		case Child :
+//			return new ChildFilter(ast.getValue(), childfilter);
+//		case Descendant :
+//			return new DescendantFilter(ast.getValue(), childfilter);
+//		case Attribute :
+//			return new AttributeFilter(ast.getValue(), childfilter);
+//		case Text : //TODO: create filter
+//			return null;
+//		case Match : //TODO: create filter
+//			return null;
+//		default : 
+//			return null;
+//		}
+//	}
 	
 	public XML2CSV(String xpath) {
-		Parser parser = new Parser();
+		FilterParser parser = new FilterParser();
 		
-		filter = ASTtoSaxFilter(parser.parseNode(xpath), false);
+		filter = parser.parseFilter(xpath);
 	}
 	
 	@Override
