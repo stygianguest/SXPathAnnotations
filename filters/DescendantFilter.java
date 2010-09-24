@@ -72,4 +72,14 @@ public class DescendantFilter<T> implements SaxFilter<T> {
 	public SaxFilter<T> fork() {
 		return new DescendantFilter<T>(tagname, next.fork());
 	}
+
+	@Override
+	public <U> SaxFilter<Pair<T, U>> addEndpoint(SaxFilter<U> tail) {
+		return new DescendantFilter<Pair<T,U>>(tagname, next.addEndpoint(tail));
+	}
+
+	@Override
+	public <U> SaxFilter<U> append(SaxFilter<U> tail) {
+		return new DescendantFilter<U>(tagname, next.append(tail));
+	}
 }

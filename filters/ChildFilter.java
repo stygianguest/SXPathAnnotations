@@ -75,4 +75,14 @@ public class ChildFilter<T> implements SaxFilter<T> {
 		return new ChildFilter<T>(tagname, next.fork());
 	}
 
+	@Override
+	public <U> SaxFilter<Pair<T, U>> addEndpoint(SaxFilter<U> tail) {
+		return new ChildFilter<Pair<T,U>>(tagname, next.addEndpoint(tail));
+	}
+	
+	@Override
+	public <U> SaxFilter<U> append(SaxFilter<U> tail) {
+		return new DescendantFilter<U>(tagname, next.append(tail));
+	}
+
 }

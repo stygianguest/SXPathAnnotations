@@ -80,4 +80,14 @@ public class SelectionEndpoint implements SaxFilter<String> {
 			throw new UnsupportedOperationException();
 		}
     }
+
+	@Override
+	public <U> SaxFilter<Pair<String, U>> addEndpoint(SaxFilter<U> tail) {
+		return new BranchFilter<String, U>(this, tail);
+	}
+
+	@Override
+	public <U> SaxFilter<U> append(SaxFilter<U> tail) {
+		return tail;
+	}
 }

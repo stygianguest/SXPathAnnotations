@@ -18,6 +18,11 @@ public interface SaxFilter<T> {
 	public Iterator<T> attributes(Attributes attributes);
 	
 	public SaxFilter<T> fork();
+
+	// append changes this object and returns it
+	public <U> SaxFilter<Pair<T,U>> addEndpoint(SaxFilter<U> tail);
+	
+	public <U> SaxFilter<U> append(SaxFilter<U> tail);
 	
 	//TODO: add and implement this function?
 //	public abstract SaxFilter merge(SaxFilter filter);

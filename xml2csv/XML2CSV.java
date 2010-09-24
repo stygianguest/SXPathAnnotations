@@ -44,7 +44,6 @@ public class XML2CSV extends DefaultHandler {
 		for (AST pred : ast.getPredicates())
 			childfilter = new BranchFilter(childfilter,
 					ASTtoSaxFilter(pred, true));
-
 		
 		for (AST child : ast.getChildren())
 			childfilter = new BranchFilter(childfilter,
@@ -103,47 +102,6 @@ public class XML2CSV extends DefaultHandler {
 	public static void main(String[] args) {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		try {
-//			 //exchange-document (@country, @doc-number, @kind) \
-//			      //citation/patcit/document-id (/country, /doc-number, /kind)
-//			XML2CSVCommandline driver = new XML2CSVCommandline();
-//			
-//			SaxFilter country = new SelectionEndpoint();
-//			SaxFilter docNumber = new SelectionEndpoint();
-//			SaxFilter kind = new SelectionEndpoint();
-//			SaxFilter patcitCountry = new SelectionEndpoint();
-//			SaxFilter patcitDocNumber = new SelectionEndpoint();
-//			SaxFilter patcitKind = new SelectionEndpoint();
-//			
-//			SaxFilter filter = new DescendantFilter(
-//					"exch:exchange-document",
-//					new BranchFilter(new SaxFilter[] {
-//						new AttributeFilter("country", country),
-//						new AttributeFilter("doc-number", docNumber),
-//						new AttributeFilter("kind", kind) },
-//						new DescendantFilter("exch:citation",
-//								new ChildFilter("patcit", 
-//									new ChildFilter("document-id",
-//										new BranchFilter(new SaxFilter[] {
-//												new ChildFilter(
-//														"country",
-//														patcitCountry),
-//												new ChildFilter(
-//														"doc-number",
-//														patcitDocNumber),
-//												new ChildFilter("kind",
-//														patcitKind) },
-//												new PredicateEndpoint()))))));
-//			
-//			driver.filter = filter;
-//			driver.endpoints = new SaxFilter[] {
-//					country, docNumber, kind, 
-//					patcitCountry, patcitDocNumber, patcitKind };
-			
-			// now parse
-//			SAXParser saxParser = factory.newSAXParser();			
-//			long start = System.currentTimeMillis();
-//			saxParser.parse(new File("/tmp/DOCDB-200906-001-AP-0001.xml"), driver);
-//			System.out.println("done in " + (System.currentTimeMillis() - start) + "ms");
 			
 			if (args.length < 2) {
 				System.out.println("Usage: xml2csv XPATH FILES");

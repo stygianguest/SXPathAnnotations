@@ -81,4 +81,70 @@ public class BranchFilter<L,R> implements SaxFilter<Pair<L,R>> {
 		return fork;
 	}
 
+	@Override
+	public <U> SaxFilter<Pair<Pair<L, R>, U>> addEndpoint(final SaxFilter<U> tail) {
+		return null;
+//		return new SaxFilter<Pair<Pair<L,R>,U>>() {
+//			
+//			private Iterator<Pair<Pair<L,R>, U>> liftPair(Iterator<Pair<L, Pair<R,U>>> it) {
+//				return null;
+//			}
+//			
+//			private BranchFilter<L, Pair<R,U>> filter =
+//				new BranchFilter<L, Pair<R,U>>(left, right.append(tail));
+//
+//			@Override
+//			public <V> SaxFilter<Pair<Pair<Pair<L, R>, U>, V>> append(
+//					SaxFilter<V> tail) {
+//				return ;
+//			}
+//
+//			@Override
+//			public Iterator<Pair<Pair<L, R>, U>> attributes(
+//					Attributes attributes) {
+//				// TODO Auto-generated method stub
+//				return null;
+//			}
+//
+//			@Override
+//			public Iterator<Pair<Pair<L, R>, U>> characters(char[] ch,
+//					int start, int length) {
+//				// TODO Auto-generated method stub
+//				return null;
+//			}
+//
+//			@Override
+//			public Iterator<Pair<Pair<L, R>, U>> deselect() {
+//				// TODO Auto-generated method stub
+//				return null;
+//			}
+//
+//			@Override
+//			public Iterator<Pair<Pair<L, R>, U>> endElement(String uri,
+//					String localName, String qName) {
+//				// TODO Auto-generated method stub
+//				return null;
+//			}
+//
+//			@Override
+//			public SaxFilter<Pair<Pair<L, R>, U>> fork() {
+//				// TODO Auto-generated method stub
+//				return null;
+//			}
+//
+//			@Override
+//			public Iterator<Pair<Pair<L, R>, U>> startElement(String uri,
+//					String localName, String qName) {
+//				// TODO Auto-generated method stub
+//				return null;
+//			}
+//			
+//		};
+	}
+
+	@Override
+	public <U> SaxFilter<U> append(SaxFilter<U> tail) {
+		return new BranchFilter;
+	}
+
 }

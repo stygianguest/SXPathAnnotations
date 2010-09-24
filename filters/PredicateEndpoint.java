@@ -4,6 +4,9 @@ import java.util.Iterator;
 
 import org.xml.sax.Attributes;
 
+//FIXME: this thing actually returns an empty list or a list with one boolean
+// the value of which will always be true, I need to add some kind of special
+// predicate branch that ignores the value of the predicate endpoint
 public class PredicateEndpoint implements SaxFilter<Boolean> {
 
 	public PredicateEndpoint() {
@@ -38,5 +41,15 @@ public class PredicateEndpoint implements SaxFilter<Boolean> {
 	public SaxFilter<Boolean> fork() {
         // since this class is stateless, there's no need to make a copy
 		return this;
+	}
+
+	@Override
+	public <U> SaxFilter<Pair<Boolean, U>> addEndpoint(SaxFilter<U> tail) {
+		return new BranchFilter<Boolean, U>(this, tail);
+	}
+	
+	@Override
+	public <U> SaxFilter<U> append(SaxFilter<U> tail) {
+		return tail;
 	}
 }
