@@ -60,11 +60,6 @@ public class AttributeFilter<T> implements SaxFilter<T> {
 	}
 
 	@Override
-	public <U> SaxFilter<Pair<T, U>> addEndpoint(SaxFilter<U> tail) {
-		return new ChildFilter<Pair<T,U>>(attribute, next.addEndpoint(tail));
-	}
-
-	@Override
 	public <U> SaxFilter<U> append(SaxFilter<U> tail) {
 		return new AttributeFilter<U>(attribute, next.append(tail));
 	}

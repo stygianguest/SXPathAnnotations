@@ -31,22 +31,24 @@ public class FilterParser {
 	}
 
 	SaxFilter parseFilter(CharacterIterator it, boolean isPred) { 
+		SaxFilter filter;
+		
 		switch (it.current()) {
-        case '(' :
-            it.next();
-            SaxFilter filter = parseFilterList(it, isPred);
-            if (it.current() == ')') {
-            	it.next();
-                return filter;
-            }
-            else
-                throw new RuntimeException("Error while parsing, expecting ')'");
+//        case '(' :
+//            it.next();
+//            filter = parseFilterList(it, isPred);
+//            if (it.current() == ')') {
+//            	it.next();
+//                return filter;
+//            }
+//            else
+//                throw new RuntimeException("Error while parsing, expecting ')'");
         case '[' :
             it.next();
             filter = parseFilterList(it, true);
             if (it.current() == ']') {
             	it.next();
-                return new BranchFilter(filter, parseFilter(it, isPred));
+                return new PredicateFilter(filter, parseFilter(it, isPred));
             }
             else
                 throw new RuntimeException("Error while parsing, expecting ']'");

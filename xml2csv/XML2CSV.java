@@ -20,42 +20,6 @@ public class XML2CSV extends DefaultHandler {
 	public XML2CSV() {
 	}
 	
-//	public static SaxFilter ASTtoSaxFilter(AST ast, boolean isPredicate) {
-//		SaxFilter childfilter;
-//		
-//		if (ast.getChild() == null) {
-//			if (isPredicate || ast.getChildren().length > 0)
-//				childfilter = new PredicateEndpoint();
-//			else
-//				childfilter = new SelectionEndpoint();
-//		} else {
-//			childfilter = ASTtoSaxFilter(ast.getChild(), isPredicate);  
-//		}
-//		
-//		for (AST pred : ast.getPredicates())
-//			childfilter = new BranchFilter(childfilter,
-//					ASTtoSaxFilter(pred, true));
-//		
-//		for (AST child : ast.getChildren())
-//			childfilter = new BranchFilter(childfilter,
-//					ASTtoSaxFilter(child, isPredicate));			
-//				
-//		switch (ast.getAxis()) {
-//		case Child :
-//			return new ChildFilter(ast.getValue(), childfilter);
-//		case Descendant :
-//			return new DescendantFilter(ast.getValue(), childfilter);
-//		case Attribute :
-//			return new AttributeFilter(ast.getValue(), childfilter);
-//		case Text : //TODO: create filter
-//			return null;
-//		case Match : //TODO: create filter
-//			return null;
-//		default : 
-//			return null;
-//		}
-//	}
-	
 	public XML2CSV(String xpath) {
 		FilterParser parser = new FilterParser();
 		

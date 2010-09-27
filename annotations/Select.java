@@ -5,6 +5,6 @@ import java.lang.annotation.*;
 // name as the default path 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Selection {
-	public String path();
+public @interface Select {
+	public String value();
 }

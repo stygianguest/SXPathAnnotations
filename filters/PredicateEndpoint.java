@@ -42,11 +42,6 @@ public class PredicateEndpoint implements SaxFilter<Boolean> {
         // since this class is stateless, there's no need to make a copy
 		return this;
 	}
-
-	@Override
-	public <U> SaxFilter<Pair<Boolean, U>> addEndpoint(SaxFilter<U> tail) {
-		return new BranchFilter<Boolean, U>(this, tail);
-	}
 	
 	@Override
 	public <U> SaxFilter<U> append(SaxFilter<U> tail) {
