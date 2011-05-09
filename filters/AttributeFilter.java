@@ -24,6 +24,11 @@ public class AttributeFilter<T> implements SaxFilter<T> {
 	}
 	
 	@Override
+	public String toString() {
+		return "@" + attribute + next;
+	}
+
+	@Override
 	public Iterator<T> attributes(Attributes attributes) {
 		if (depth == 0) {
 			String value = attributes.getValue(attribute);

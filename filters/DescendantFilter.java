@@ -77,4 +77,9 @@ public class DescendantFilter<T> implements SaxFilter<T> {
 	public <U> SaxFilter<U> append(SaxFilter<U> tail) {
 		return new DescendantFilter<U>(tagname, next.append(tail));
 	}
+	
+	@Override
+	public String toString() {
+		return "//" + tagname + next;
+	}
 }

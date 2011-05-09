@@ -79,5 +79,10 @@ public class ChildFilter<T> implements SaxFilter<T> {
 	public <U> SaxFilter<U> append(SaxFilter<U> tail) {
 		return new ChildFilter<U>(tagname, next.append(tail));
 	}
+	
+	@Override
+	public String toString() {
+		return "/" + tagname + next;
+	}
 
 }

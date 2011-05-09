@@ -49,11 +49,11 @@ public class SelectionEndpoint implements SaxFilter<String> {
 		//FIXME: we really don't need to copy the value?!
 		return this;
 	}
-
-	@Override
-	public String toString() {
-		return builder.toString();
-	}
+//
+//	@Override
+//	public String toString() {
+//		return builder.toString();
+//	}
 
     class SingletonIterator<V> implements Iterator<V> {
     	
@@ -84,5 +84,10 @@ public class SelectionEndpoint implements SaxFilter<String> {
 	@Override
 	public <U> SaxFilter<U> append(SaxFilter<U> tail) {
 		return tail;
+	}	
+	
+	@Override
+	public String toString() {
+		return "!";
 	}
 }

@@ -47,4 +47,9 @@ public class PredicateEndpoint implements SaxFilter<Boolean> {
 	public <U> SaxFilter<U> append(SaxFilter<U> tail) {
 		return tail;
 	}
+	
+	@Override
+	public String toString() {
+		return "?";
+	}
 }

@@ -91,5 +91,11 @@ public class BranchFilter<L,R> implements SaxFilter<Pair<L,R>> {
 		return new PredicateFilter<U>(left.append(new PredicateEndpoint()), 
 				right.append(tail));
 	}
+	
+	
+	@Override
+	public String toString() {
+		return "(" + left + ", " + right + ")";
+	}
 
 }

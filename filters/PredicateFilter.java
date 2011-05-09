@@ -48,9 +48,8 @@ public class PredicateFilter<T> implements SaxFilter<T> {
 	}
 	
 	private void testPredicate(Iterator<Boolean> predResult) {
-		// in principle it should be enough to just test hasNext(), be who knows
-		// what the values could mean in the future.
-		hasMatched = hasMatched || (predResult.hasNext() && predResult.next().booleanValue());
+		//FIXME in principle it should be enough to just test hasNext()
+		hasMatched = hasMatched || predResult.hasNext();
 	}
 	
 	
@@ -103,4 +102,9 @@ public class PredicateFilter<T> implements SaxFilter<T> {
 		return new PredicateFilter<U>(pred, next.append(tail));
 	}
 
+	
+	@Override
+	public String toString() {
+		return "[" + pred + "]" + next;
+	}
 }
