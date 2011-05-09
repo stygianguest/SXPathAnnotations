@@ -17,6 +17,8 @@ public class UnitIterator implements Iterator<Boolean> {
 		if (wasCounted)
 			throw new NoSuchElementException();
 		
+		wasCounted = true;
+		
 		return new Boolean(true);
 	}
 
