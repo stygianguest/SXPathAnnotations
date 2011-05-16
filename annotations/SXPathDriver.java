@@ -77,7 +77,7 @@ public class SXPathDriver extends DefaultHandler {
 	}
 	
 	private void invokeCallback(int i, Iterator it) {
-		while (it.hasNext()) {
+		while (it != null && it.hasNext()) {
 			try {
 				callbacks.get(i).invoke(this, flatten(it.next()));
 			} catch (IllegalArgumentException e) {

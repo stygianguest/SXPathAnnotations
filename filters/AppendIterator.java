@@ -9,12 +9,20 @@ public class AppendIterator<U> implements Iterator<U> {
         this.suffix = suffix;
     }
     
+    private boolean prefixHasNext() {
+    	return prefix != null && prefix.hasNext();
+    }
+    
+    private boolean suffixHasNext() {
+    	return suffix != null && suffix.hasNext();
+    }
+    
 
     public static <T> Iterator<T> append(Iterator<T> prefix, Iterator<T> suffix) {
-        if (!prefix.hasNext())
+        if (prefix == null || !prefix.hasNext())
             return suffix;
 
-        if (!suffix.hasNext())
+        if (prefix == null || !suffix.hasNext())
             return prefix;
 
         return new AppendIterator<T>(prefix, suffix);
@@ -25,12 +33,12 @@ public class AppendIterator<U> implements Iterator<U> {
 
 	@Override
 	public boolean hasNext() {
-		return prefix.hasNext() || suffix.hasNext();
+		return prefixHasNext() || suffixHasNext();
 	}
 
 	@Override
 	public U next() {
-        if (prefix.hasNext())
+        if (prefixHasNext())
             return prefix.next();
 
 		return suffix.next();

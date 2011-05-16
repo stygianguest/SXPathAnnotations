@@ -15,18 +15,19 @@ public class PredicateFilter<T> implements SaxFilter<T> {
 	SaxFilter<T> next;
 	
 	boolean hasMatched = false;
-	Iterator<T> buffer = new EmptyIterator<T>();
+	Iterator<T> buffer = null;
 	
 	private Iterator<T> conditionalReturn(final Iterator<T> retval) {
 		Iterator<T> joinedRetVal = new Iterator<T>() {
 			@Override
 			public boolean hasNext() {
-				return buffer.hasNext() || retval.hasNext();
+				return buffer != null && buffer.hasNext() 
+					|| retval != null && retval.hasNext();
 			}
 
 			@Override
 			public T next() {
-				if (buffer.hasNext())
+				if (buffer != null && buffer.hasNext())
 					return buffer.next();
 				else
 					return retval.next();
@@ -39,11 +40,11 @@ public class PredicateFilter<T> implements SaxFilter<T> {
 		};
 		
 		if (hasMatched) {
-			buffer = new EmptyIterator<T>();
+			buffer = null;
 			return joinedRetVal;
 		} else {
 			buffer = joinedRetVal;
-			return new EmptyIterator<T>();
+			return null;
 		}
 	}
 	
@@ -70,7 +71,7 @@ public class PredicateFilter<T> implements SaxFilter<T> {
 		if (!hasMatched) testPredicate(pred.deselect());
 		Iterator<T> retval = conditionalReturn(next.deselect());
 		hasMatched = false;
-		buffer = new EmptyIterator<T>();
+		buffer = null;
 		return retval;
 	}
 	

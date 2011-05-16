@@ -20,7 +20,7 @@ public class AttributeFilter<T> implements SaxFilter<T> {
 	public Iterator<T> startElement(String uri, String localName, String qName) {
 		depth++;
 
-		return new EmptyIterator<T>();
+		return null;
 	}
 	
 	@Override
@@ -40,23 +40,23 @@ public class AttributeFilter<T> implements SaxFilter<T> {
 			}
 		}
 		
-		return new EmptyIterator<T>();
+		return null;
 	}
 
 	@Override
 	public Iterator<T> characters(char[] ch, int start, int length) {
-		return new EmptyIterator<T>();
+		return null;
 	}
 
 	@Override
 	public Iterator<T> endElement(String uri, String localName, String qName) {
 		depth--;
-		return new EmptyIterator<T>();
+		return null;
 	}
 
 	@Override
 	public Iterator<T> deselect() {
-		return new EmptyIterator<T>();
+		return null;
 	}
 
 	@Override

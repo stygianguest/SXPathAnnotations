@@ -26,7 +26,7 @@ public class ChildFilter<T> implements SaxFilter<T> {
 		if (depth == 1)
 			isMatch = tagname.equals(qName);
 			
-		return new EmptyIterator<T>();
+		return null;
 	}
 	
 	@Override
@@ -34,7 +34,7 @@ public class ChildFilter<T> implements SaxFilter<T> {
 		if (isMatch)
 			return next.attributes(attributes);
 		
-		return new EmptyIterator<T>();
+		return null;
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class ChildFilter<T> implements SaxFilter<T> {
 		if (isMatch)
 			return next.characters(ch, start, length);
 		
-		return new EmptyIterator<T>();
+		return null;
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class ChildFilter<T> implements SaxFilter<T> {
 		if (isMatch)
 			return next.endElement(uri, localName, qName);
 		
-		return new EmptyIterator<T>();
+		return null;
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class ChildFilter<T> implements SaxFilter<T> {
         //generated a deselect, howerver, in case of erroneous xml files
         //(missing end-tags) it might be better to deselect anyway (and return
         //the results)
-		return new EmptyIterator<T>();
+		return null;
 	}
 
 	@Override

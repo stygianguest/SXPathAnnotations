@@ -18,20 +18,20 @@ public class DescendantFilter<T> implements SaxFilter<T> {
 	
 	@Override
 	public Iterator<T> startElement(String uri, String localName, String qName) {
-		Iterator<T> results = new EmptyIterator<T>();
+		Iterator<T> results = null;
 		
 		for ( SaxFilter<T> filter : stack )
 			results = AppendIterator.append(results, filter.startElement(uri, localName, qName));
 		
 		if (tagname.equals(qName))
 			stack.push(next.fork());
-		
+				
 		return results;
 	}
 	
 	@Override
 	public Iterator<T> attributes(Attributes attributes) {
-		Iterator<T> results = new EmptyIterator<T>();
+		Iterator<T> results = null;
 		
 		for (SaxFilter<T> filter : stack)
 			results = AppendIterator.append(results, filter.attributes(attributes));
@@ -41,7 +41,7 @@ public class DescendantFilter<T> implements SaxFilter<T> {
 
 	@Override
 	public Iterator<T> characters(char[] ch, int start, int length) {
-		Iterator<T> results = new EmptyIterator<T>();
+		Iterator<T> results = null;
 		
 		for ( SaxFilter<T> filter : stack )
 			results = AppendIterator.append(results, filter.characters(ch, start, length));
@@ -51,7 +51,7 @@ public class DescendantFilter<T> implements SaxFilter<T> {
 
 	@Override
 	public Iterator<T> endElement(String uri, String localName, String qName) {
-		Iterator<T> results = new EmptyIterator<T>();
+		Iterator<T> results = null;
 		
 		if (tagname.equals(qName))
 			results = AppendIterator.append(results, stack.pop().deselect());
@@ -65,7 +65,7 @@ public class DescendantFilter<T> implements SaxFilter<T> {
 	@Override
 	public Iterator<T> deselect() {
         //FIXME: see ChildFilter.deselect()
-		return new EmptyIterator<T>();
+		return null;
 	}
 
 	@Override

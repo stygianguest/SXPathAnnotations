@@ -23,13 +23,13 @@ public class BranchFilter<L,R> implements SaxFilter<Pair<L,R>> {
 
     private Iterator<Pair<L,R>> crossProduct(Iterator<L> leftNewIt, Iterator<R> rightNewIt) {
         Vector<Pair<L,R>> newPairs = new Vector<Pair<L,R>>();
-        while (leftNewIt.hasNext()) {
+        while (leftNewIt != null && leftNewIt.hasNext()) {
             L lval = leftNewIt.next();
             leftBuffer.add(lval);
             for (R rval : rightBuffer)
                 newPairs.add(new Pair<L,R>(lval, rval));
         }
-        while (rightNewIt.hasNext()) {
+        while (rightNewIt != null && rightNewIt.hasNext()) {
             R rval = rightNewIt.next();
             rightBuffer.add(rval);
             for (L lval : leftBuffer)

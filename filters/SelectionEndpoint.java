@@ -15,25 +15,25 @@ public class SelectionEndpoint implements SaxFilter<String> {
 
 	@Override
 	public Iterator<String> startElement(String uri, String localName, String qName) {
-		return new EmptyIterator<String>();
+		return null;
 	}
 	
 	@Override
 	public Iterator<String> attributes(Attributes attributes) {
-		return new EmptyIterator<String>();
+		return null;
 	}
 
 
 	@Override
 	public Iterator<String> characters(char[] ch, int start, int length) {
 		builder.append(ch, start, length);
-		return new EmptyIterator<String>();
+		return null;
 	}
 
 
 	@Override
 	public Iterator<String> endElement(String uri, String localName, String qName) {
-		return new EmptyIterator<String>();
+		return null;
 	}
 
 
